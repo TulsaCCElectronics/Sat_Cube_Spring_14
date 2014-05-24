@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Sat_Cube_Spring_14", "Sat_Cube_Spring_14\Sat_Cube_Spring_14.cproj", "{62850A3D-23C9-4C69-8CC1-F740F0EEBAFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62850A3D-23C9-4C69-8CC1-F740F0EEBAFC}.Debug|AVR.ActiveCfg = Debug|AVR
+		{62850A3D-23C9-4C69-8CC1-F740F0EEBAFC}.Debug|AVR.Build.0 = Debug|AVR
+		{62850A3D-23C9-4C69-8CC1-F740F0EEBAFC}.Release|AVR.ActiveCfg = Release|AVR
+		{62850A3D-23C9-4C69-8CC1-F740F0EEBAFC}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
