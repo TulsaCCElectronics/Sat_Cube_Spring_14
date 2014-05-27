@@ -27,6 +27,7 @@ DWORD get_fattime (void)
 }
 
 int main (void);
+void write_log (void);
 
 
 #endif /* SAT_CUBE_SPRING_14_H_ */

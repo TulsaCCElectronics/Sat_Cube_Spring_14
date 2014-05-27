@@ -7,8 +7,12 @@
 
 #include "mpl3115a2.h" 
 
-FATFS FatFs;		/* FatFs work area needed for each volume */
-FIL *fp;			/* File object needed for each open file */
+long altitudeWhole = 0;
+long altitudeFrac = 0;
+long pressureWhole = 0;
+long pressureFrac = 0;
+long temperatureWhole = 0;
+long temperatureFrac = 0;
 
 uint8_t altStatus = 0x00;
 
@@ -40,14 +44,7 @@ void alt_set_eventFlags (void)
 
 void mpl_getAlt (uint8_t altStatus) 
 {    
-   long temp = 0;
-   long altitudeWhole = 0;
-   long altitudeFrac = 0;
-   long pressureWhole = 0;
-   long pressureFrac = 0;
-   long temperatureWhole = 0;
-   long temperatureFrac = 0;
-   UINT bw;
+   long temp;
    
    alt_set_active();
     
@@ -87,15 +84,6 @@ else
 	{
 		temperatureWhole = (long) (msbT);			// Whole
 		temperatureFrac = (long)((lsbT >> 4)/16);	// Fractional degrees Centigrade
-	}
-   
-	f_mount(&FatFs, "", 0);		/* Give a work area to the default drive */
-	
-	fp = malloc(sizeof (FIL));
-	if (f_open(fp, "newfile.txt", FA_WRITE | FA_OPEN_ALWAYS) || f_lseek(fp, f_size(fp))); 
-	{	
-		f_printf(fp, "%ld.%ld, %ld.%ld, %ld.%ld\r\n", altitudeWhole, altitudeFrac, pressureWhole, pressureFrac, temperatureWhole, temperatureFrac);
-		f_close(fp);
 	}
 } 
 

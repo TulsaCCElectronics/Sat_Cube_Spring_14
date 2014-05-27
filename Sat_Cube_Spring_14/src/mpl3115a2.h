@@ -64,6 +64,13 @@
 #define OFF_T      0x2C
 #define OFF_H      0x2D
 
+extern long altitudeWhole;
+extern long altitudeFrac;
+extern long pressureWhole;
+extern long pressureFrac;
+extern long temperatureWhole;
+extern long temperatureFrac;
+
 void mpl_init (void);
 void alt_set_mode (void);
 void alt_set_eventFlags (void);
