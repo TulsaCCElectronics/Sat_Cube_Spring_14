@@ -7,18 +7,17 @@
 
 #include "mpl3115a2.h" 
 
-#define MPL3115a2 0xC0 
+FATFS FatFs;		/* FatFs work area needed for each volume */
+FIL *fp;			/* File object needed for each open file */
 
 uint8_t altStatus = 0x00;
-extern float altitude = 0.;
-extern float pressure = 0.;
-extern float temperature = 0.;
 
 void mpl_init (void) 
 { 
    i2c_init(); 
    alt_set_mode();
    alt_set_eventFlags(); 
+   return;
 } 
 
 void alt_set_mode (void)
@@ -27,6 +26,7 @@ void alt_set_mode (void)
 	i2c_write(CTRL_REG1);
 	i2c_write(0xB8);
 	i2c_stop();
+	return;
 }
 
 void alt_set_eventFlags (void)
@@ -35,17 +35,25 @@ void alt_set_eventFlags (void)
 	i2c_write(PT_DATA_CFG);
 	i2c_write(0x07);      // Enable all 3 pressure and temp flags
 	i2c_stop();
+	return;
 }
 
-extern float mpl_getAlt (uint8_t altStatus) 
+void mpl_getAlt (uint8_t altStatus) 
 {    
    long temp = 0;
+   long altitudeWhole = 0;
+   long altitudeFrac = 0;
+   long pressureWhole = 0;
+   long pressureFrac = 0;
+   long temperatureWhole = 0;
+   long temperatureFrac = 0;
+   UINT bw;
    
    alt_set_active();
     
    alt_get_status(); 
     
-   int8_t msbA,csbA,lsbA,msbT,lsbT = 0x00; 
+   char msbA,csbA,lsbA,msbT,lsbT = 0x00; 
        
    i2c_start_wait(MPL3115a2+I2C_WRITE); 
    i2c_write(OUT_P_MSB); 
@@ -58,39 +66,37 @@ extern float mpl_getAlt (uint8_t altStatus)
    lsbT = i2c_readNak(); 
    i2c_stop(); 
    
-    if(msbA > 0x7F) 
-	{
-	    temp = ~((long)msbA << 16 | (long)csbA << 8 | (long)lsbA) + 1; // 2's complement the data
-	    altitude = (float) (temp >> 8) + (float) ((lsbA >> 4)/16.0); // Whole number plus fraction altitude in meters for negative altitude
-	    altitude *= -1.;
-    }
-    else 
-	{
-	    temp = ((msbA << 8) | csbA);
-	    altitude = (float) (temp) + (float) ((lsbA >> 4)/16.0);  // Whole number plus fraction altitude in meters
-    }
-	
-	long pressure_whole =  ((long)msbA << 16 | (long)csbA << 8 | (long)lsbA) ; // Construct whole number pressure
-	pressure_whole >>= 6;
-	
-	lsbA &= 0x30;
-	lsbA >>= 4;
-	float pressure_frac = (float) lsbA/4.0;
 
-	pressure = (float) (pressure_whole) + pressure_frac;
+	altitudeWhole = ((msbA << 8) | csbA);
+    altitudeFrac = (long) ((lsbA >> 4)/16);  // Whole number plus fraction altitude in meters
+ 
+	
+	pressureWhole =  (long)msbA<<16 | (long)csbA<<8 | (long)lsbA; // Construct whole number pressure
+	pressureWhole >>= 6;
+
+	pressureFrac = (long)((lsbA & 0x30)>>4)/4;
 
 if(msbT > 0x7F) 
 	{
 		temp = ~(msbT << 8 | lsbT) + 1 ; // 2's complement
-		temperature = (float) (temp >> 8) + (float)((lsbT >> 4)/16.0); // add whole and fractional degrees Centigrade
-		temperature *= -1.;
+		temperatureWhole = (long) (temp >> 8);		// Whole part of temperature
+		temperatureFrac = (long)((lsbT >> 4)/16);	// Fractional degrees Centigrade
+		temperatureWhole *= -1.;
 	}
 else 
 	{
-		temperature = (float) (msbT) + (float)((lsbT >> 4)/16.0); // add whole and fractional degrees Centigrade
+		temperatureWhole = (long) (msbT);			// Whole
+		temperatureFrac = (long)((lsbT >> 4)/16);	// Fractional degrees Centigrade
 	}
    
-   return altitude;
+	f_mount(&FatFs, "", 0);		/* Give a work area to the default drive */
+	
+	fp = malloc(sizeof (FIL));
+	if (f_open(fp, "newfile.txt", FA_WRITE | FA_OPEN_ALWAYS) || f_lseek(fp, f_size(fp))); 
+	{	
+		f_printf(fp, "%ld.%ld, %ld.%ld, %ld.%ld\r\n", altitudeWhole, altitudeFrac, pressureWhole, pressureFrac, temperatureWhole, temperatureFrac);
+		f_close(fp);
+	}
 } 
 
 void alt_set_active (void)
@@ -99,6 +105,7 @@ void alt_set_active (void)
 	i2c_write(CTRL_REG1);
 	i2c_write(0xB9);
 	i2c_stop();
+	return;
 }
 
 uint8_t alt_get_status (void) 

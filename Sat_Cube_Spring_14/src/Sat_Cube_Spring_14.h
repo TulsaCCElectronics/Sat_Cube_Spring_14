@@ -11,6 +11,7 @@
 
 #include <avr/io.h>	/* Device specific declarations */
 #include <util/delay.h>
+#include <string.h>
 #include "ff.h"		/* Declarations of FatFs API */
 #include "mpl3115a2.h"
 
@@ -24,6 +25,8 @@ DWORD get_fattime (void)
 	| ((DWORD)29 << 00)
 	| ((DWORD)46 >> 00);
 }
+
+int main (void);
 
 
 #endif /* SAT_CUBE_SPRING_14_H_ */

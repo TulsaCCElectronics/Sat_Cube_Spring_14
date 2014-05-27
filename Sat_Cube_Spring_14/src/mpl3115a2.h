@@ -10,6 +10,7 @@
 #define MPL3115A2_H_
 
 #include "twi_base.h"
+#include "ff.h"
 #include <util/delay.h>
 
 #define TRUE 1
@@ -66,7 +67,7 @@
 void mpl_init (void);
 void alt_set_mode (void);
 void alt_set_eventFlags (void);
-extern float mpl_getAlt (uint8_t altStatus);
+void mpl_getAlt (uint8_t altStatus);
 void alt_set_active (void);
 uint8_t alt_get_status (void);
 
