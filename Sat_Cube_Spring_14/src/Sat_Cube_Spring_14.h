@@ -12,8 +12,15 @@
 #include <avr/io.h>	/* Device specific declarations */
 #include <util/delay.h>
 #include <string.h>
+#include <stdbool.h>
+#include <avr/interrupt.h> 
+#include <avr/power.h>
+#include <avr/sleep.h>
 #include "ff.h"		/* Declarations of FatFs API */
 #include "mpl3115a2.h"
+
+#define STOP_TIMER    TCCR0B &= 0xF8
+#define START_TIMER   TCCR0B |= 0x05
 
 DWORD get_fattime (void)
 {
@@ -26,8 +33,12 @@ DWORD get_fattime (void)
 	| ((DWORD)46 >> 00);
 }
 
+ISR(SIG_OUTPUT_COMPARE0A);
+void init_timer0(void);
 int main (void);
+void service_interrupt (void);
+void poor_rtc (void);
 void write_log (void);
-
+void sleep_now (void);
 
 #endif /* SAT_CUBE_SPRING_14_H_ */
