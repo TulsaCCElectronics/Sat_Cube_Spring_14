@@ -10,11 +10,11 @@
 FATFS FatFs;		/* FatFs work area needed for each volume */
 FIL *fp;			/* File object needed for each open file */
 
-BYTE seconds;
-BYTE minutes;
-BYTE hours;
-int ticks; 
-int takeReading;
+uint8_t  seconds;
+uint8_t  minutes;
+uint8_t hours;
+uint8_t ticks; 
+uint8_t takeReading;
 
 ISR (TIMER2_COMPA_vect)
 {
@@ -59,24 +59,24 @@ void service_interrupt (void)
 void poor_rtc (void)
 {
 		ticks++;
-		if (ticks == 100)
+		if (ticks >= 100)
 		{
 			seconds++;
 			ticks = 0;
 		}
-		if (seconds == 60)
+		if (seconds >= 60)
 		{
 			minutes++;
 			takeReading = 1;
 			PORTB ^= 0x30;
 			seconds = 0;
 		}
-		if (minutes == 60)
+		if (minutes >= 60)
 		{
 			hours++;
 			minutes = 0;
 		}
-		if (hours == 255)
+		if (hours >= 255)
 		{
 			hours = 0;
 		}
@@ -91,7 +91,7 @@ void write_log (void)
 	fp = malloc(sizeof (FIL));
 	if (f_open(fp, "newfile.txt", FA_WRITE | FA_OPEN_ALWAYS) || f_lseek(fp, f_size(fp)));
 	{
-		f_printf(fp, "%ld.%ld, %ld.%ld, %ld.%ld\n", altitudeWhole, altitudeFrac, pressureWhole, pressureFrac, temperatureWhole, temperatureFrac);
+		f_printf(fp, "%d:%d, %ld, %ld, %ld\n", hours, minutes, altitudeWhole, pressureWhole, temperatureWhole);
 		
 		f_close(fp);
 	}

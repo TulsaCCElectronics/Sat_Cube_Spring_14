@@ -8,11 +8,8 @@
 #include "mpl3115a2.h" 
 
 long altitudeWhole = 0;
-long altitudeFrac = 0;
 long pressureWhole = 0;
-long pressureFrac = 0;
 long temperatureWhole = 0;
-long temperatureFrac = 0;
 
 uint8_t altStatus = 0x00;
 
@@ -65,25 +62,19 @@ void mpl_getAlt (uint8_t altStatus)
    
 
 	altitudeWhole = ((msbA << 8) | csbA);
-    altitudeFrac = (long) ((lsbA >> 4)/16);  // Whole number plus fraction altitude in meters
- 
 	
 	pressureWhole =  (long)msbA<<16 | (long)csbA<<8 | (long)lsbA; // Construct whole number pressure
 	pressureWhole >>= 6;
-
-	pressureFrac = (long)((lsbA & 0x30)>>4)/4;
 
 if(msbT > 0x7F) 
 	{
 		temp = ~(msbT << 8 | lsbT) + 1 ; // 2's complement
 		temperatureWhole = (long) (temp >> 8);		// Whole part of temperature
-		temperatureFrac = (long)((lsbT >> 4)/16);	// Fractional degrees Centigrade
 		temperatureWhole *= -1.;
 	}
 else 
 	{
 		temperatureWhole = (long) (msbT);			// Whole
-		temperatureFrac = (long)((lsbT >> 4)/16);	// Fractional degrees Centigrade
 	}
 } 
 
