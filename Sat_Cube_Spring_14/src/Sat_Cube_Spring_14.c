@@ -91,7 +91,7 @@ void write_log (void)
 	fp = malloc(sizeof (FIL));
 	if (f_open(fp, "newfile.txt", FA_WRITE | FA_OPEN_ALWAYS) || f_lseek(fp, f_size(fp)));
 	{
-		f_printf(fp, "%ld.%ld, %ld.%ld, %ld.%ld\r\n", altitudeWhole, altitudeFrac, pressureWhole, pressureFrac, temperatureWhole, temperatureFrac);
+		f_printf(fp, "%ld.%ld, %ld.%ld, %ld.%ld\n", altitudeWhole, altitudeFrac, pressureWhole, pressureFrac, temperatureWhole, temperatureFrac);
 		
 		f_close(fp);
 	}
