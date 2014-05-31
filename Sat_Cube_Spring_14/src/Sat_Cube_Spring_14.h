@@ -12,6 +12,7 @@
 #include <avr/io.h>	/* Device specific declarations */
 #include <util/delay.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <avr/interrupt.h> 
 #include <avr/power.h>

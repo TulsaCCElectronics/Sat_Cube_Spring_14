@@ -8,7 +8,7 @@
 #include "Sat_Cube_Spring_14.h"
 
 FATFS FatFs;		/* FatFs work area needed for each volume */
-FIL *fp;			/* File object needed for each open file */
+FIL fp;			/* File object needed for each open file */
 
 uint8_t  seconds;
 uint8_t  minutes;
@@ -18,9 +18,9 @@ uint8_t takeReading;
 
 ISR (TIMER2_COMPA_vect)
 {
-	cli();
+	//cli();
 	service_interrupt();
-	sei();
+	//sei();
 }
 
 void init_timer2 (void)
@@ -85,15 +85,16 @@ void poor_rtc (void)
 void write_log (void)
 {
 	UINT bw;
+	FRESULT res;
 	
 	f_mount(&FatFs, "", 0);		/* Give a work area to the default drive */
 		
-	fp = malloc(sizeof (FIL));
-	if (f_open(fp, "newfile.txt", FA_WRITE | FA_OPEN_ALWAYS) || f_lseek(fp, f_size(fp)));
+	//fp = malloc(sizeof (FIL));
+	res = (f_open(&fp, "newfile.csv", FA_OPEN_ALWAYS | FA_READ | FA_WRITE)) || f_lseek(&fp, f_size(&fp));
+	if (!res)
 	{
-		f_printf(fp, "%d:%d, %ld, %ld, %ld\n", hours, minutes, altitudeWhole, pressureWhole, temperatureWhole);
-		
-		f_close(fp);
+		f_printf(&fp, "%d:%d, %ld, %ld, %ld\n", hours, minutes, altitudeWhole, pressureWhole, temperatureWhole);
+		f_sync(&fp);
 	}
 }
 

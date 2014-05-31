@@ -90,15 +90,17 @@ void alt_set_active (void)
 uint8_t alt_get_status (void) 
 { 
    uint8_t altStatus = 0x00; 
+   uint8_t i = 0;
     
-   while ((altStatus & 0x08) == 0) 
+   while (((altStatus & 0x08) == 0) || (i <= 10))
    { 
       i2c_start_wait(MPL3115a2+I2C_WRITE); 
       i2c_write(STATUS); 
       i2c_rep_start(MPL3115a2+I2C_READ); 
       altStatus = i2c_readNak(); 
       i2c_stop(); 
-	  _delay_ms(100);
+	  _delay_us(100);
+	  i++;
    } 
    //DDRB |= 0x30; PORTB |= 0x30;; 
    return altStatus;
