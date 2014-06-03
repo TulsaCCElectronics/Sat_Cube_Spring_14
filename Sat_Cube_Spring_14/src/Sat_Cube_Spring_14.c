@@ -8,13 +8,17 @@
 #include "Sat_Cube_Spring_14.h"
 
 FATFS FatFs;		/* FatFs work area needed for each volume */
-FIL fp;			/* File object needed for each open file */
+FIL fp;				/* File object needed for each open file */
 
 uint8_t  seconds;
 uint8_t  minutes;
 uint8_t hours;
 uint8_t ticks; 
 uint8_t takeReading;
+
+/************************************************************************/
+/* Interrupts                                                           */
+/************************************************************************/
 
 ISR (TIMER2_COMPA_vect)
 {
@@ -23,26 +27,47 @@ ISR (TIMER2_COMPA_vect)
 	//sei();
 }
 
+/************************************************************************/
+/* Initilization Routines                                               */
+/************************************************************************/
+
 void init_timer2 (void)
 {
-	TCCR2A |= (1 << WGM21);					// ctc mode
-	TIMSK2 |= (1 << OCIE2A);				// interrupt enable
-	sei();
+	TCCR2A |= (1 << WGM21);								// ctc mode
+	TIMSK2 |= (1 << OCIE2A);							// interrupt enable
+	sei();			
 	TCCR2B |= (1 << CS22)|(1 << CS21)|(1 << CS20);		// 1024 prescaler
-	OCR2A = 78;								// 9.985mS
+	OCR2A = 78;											// 9.985mS
 }
+
+void init_hackHD (void)
+{
+	DDRD = (1 << PORTD2);
+	PIND = (1 << PIND2);
+	_delay_ms(400);
+	PIND = (1 << PIND2);
+}
+
+/************************************************************************/
+/* Main                                                                 */
+/************************************************************************/
 
 int main (void)
 {
 	DDRB |= 0x30;
 	mpl_init();
 	init_timer2();
+	init_hackHD();
 	
 	while(1)
 	{
 		sleep_now();
 	}
 }
+
+/************************************************************************/
+/* Subroutines                                                          */
+/************************************************************************/
 
 void service_interrupt (void)
 {
@@ -89,7 +114,6 @@ void write_log (void)
 	
 	f_mount(&FatFs, "", 0);		/* Give a work area to the default drive */
 		
-	//fp = malloc(sizeof (FIL));
 	res = (f_open(&fp, "newfile.csv", FA_OPEN_ALWAYS | FA_READ | FA_WRITE)) || f_lseek(&fp, f_size(&fp));
 	if (!res)
 	{
@@ -97,6 +121,10 @@ void write_log (void)
 		f_sync(&fp);
 	}
 }
+
+/************************************************************************/
+/* Device Management                                                    */
+/************************************************************************/
 
 void sleep_now (void)
 {

@@ -13,10 +13,10 @@
 #include "ff.h"
 #include <util/delay.h>
 
-#define TRUE 1
+#define TRUE  1
 #define FALSE 0
 
-#define MPL3115a2 0xC0
+#define MPL3115a2  0xC0
 #define STATUS     0x00
 #define OUT_P_MSB  0x01
 #define OUT_P_CSB  0x02

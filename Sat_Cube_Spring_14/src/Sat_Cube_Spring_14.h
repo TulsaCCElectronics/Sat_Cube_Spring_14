@@ -20,9 +20,6 @@
 #include "ff.h"		/* Declarations of FatFs API */
 #include "mpl3115a2.h"
 
-#define STOP_TIMER    TCCR0B &= 0xF8
-#define START_TIMER   TCCR0B |= 0x05
-
 DWORD get_fattime (void)
 {
 	/* Pack date and time into a DWORD variable */
@@ -36,6 +33,7 @@ DWORD get_fattime (void)
 
 ISR(SIG_OUTPUT_COMPARE0A);
 void init_timer0(void);
+void init_hackHD (void);
 int main (void);
 void service_interrupt (void);
 void poor_rtc (void);
